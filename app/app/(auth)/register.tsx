@@ -1,4 +1,4 @@
-import Button from "@/components/button";
+import TextButton from "@/components/text-button";
 import { Text, View } from "react-native";
 import Input from "@/components/input";
 import BackButton from "@/components/back-button";
@@ -44,7 +44,7 @@ export default function SignIn() {
           keyboardType="email-address"
         />
         <Input placeholder="Set a password" inputMode="text" secureTextEntry />
-        <Button>Sign Up</Button>
+        <TextButton>Sign Up</TextButton>
       </View>
     </View>
   );

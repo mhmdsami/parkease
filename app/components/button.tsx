@@ -2,7 +2,7 @@ import { COLORS } from "@/constants/colors";
 import { Pressable, StyleProp, Text, ViewStyle } from "react-native";
 
 interface ButtonProps extends React.ComponentProps<typeof Pressable> {
-  children: string;
+  children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   variant?: "primary" | "outline";
 }
@@ -18,7 +18,8 @@ export default function Button({
     <Pressable
       style={[
         {
-          backgroundColor: variant === "outline" ? COLORS.text : COLORS.secondary,
+          backgroundColor:
+            variant === "outline" ? COLORS.text : COLORS.secondary,
           paddingHorizontal: 15,
           paddingVertical: 15,
           borderRadius: 12,
@@ -32,16 +33,7 @@ export default function Button({
       disabled={disabled}
       {...props}
     >
-      <Text
-        style={{
-          color: variant === "outline" ? COLORS.secondary : COLORS.text,
-          fontFamily: "MonaSans-Bold",
-          textAlign: "center",
-          fontSize: 20,
-        }}
-      >
-        {children}
-      </Text>
+      {children}
     </Pressable>
   );
 }

@@ -1,5 +1,4 @@
-import Button from "@/components/button";
-import { COLORS } from "@/constants/colors";
+import TextButton from "@/components/text-button";
 import { Text, View } from "react-native";
 import { router } from "expo-router";
 import Divider from "@/components/divider";
@@ -31,14 +30,14 @@ export default function Auth() {
           gap: 20,
         }}
       >
-        <Button onPress={() => router.push("/(auth)/sign-in")}>Sign In</Button>
+        <TextButton onPress={() => router.push("/(auth)/sign-in")}>Sign In</TextButton>
         <Divider />
-        <Button
+        <TextButton
           variant="outline"
           onPress={() => router.push("/(auth)/register")}
         >
           Register
-        </Button>
+        </TextButton>
       </View>
     </View>
   );
