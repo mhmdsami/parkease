@@ -1,6 +1,6 @@
 import { COLORS } from "@/constants/colors";
 import { Pressable, StyleProp, Text, TextStyle } from "react-native";
-import Button from "./button";
+import Button from "./ui/button";
 
 interface TextButtonProps extends React.ComponentProps<typeof Button> {
   children: string;

@@ -1,7 +1,8 @@
 import { SafeAreaView, Text, View } from "react-native";
 import { COLORS } from "@/constants/colors";
-import { MapPin, User } from "lucide-react-native";
-import Button from "@/components/button";
+import { MapPin } from "lucide-react-native";
+import Button from "@/components/ui/button";
+import ProfileButton from "@/components/profile-button";
 
 export default function Index() {
   return (
@@ -29,20 +30,28 @@ export default function Index() {
           >
             Lockout
           </Text>
-          <View
+          <ProfileButton />
+        </View>
+        <View
+          style={{
+            display: "flex",
+            gap: 10,
+            flexGrow: 1,
+            height: "80%",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: COLORS.tertiary,
+            borderRadius: 20,
+          }}
+        >
+          <Text
             style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              borderColor: COLORS.primary,
-              borderWidth: 2,
-              borderRadius: 10,
-              height: 36,
-              width: 36,
+              fontFamily: "MonaSans-Medium",
+              fontSize: 16,
             }}
           >
-            <User color={COLORS.primary} />
-          </View>
+            Map
+          </Text>
         </View>
         <Button
           style={{

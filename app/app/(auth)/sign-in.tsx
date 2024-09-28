@@ -1,9 +1,34 @@
 import TextButton from "@/components/text-button";
 import { Text, View } from "react-native";
-import Input from "@/components/input";
+import Input from "@/components/ui/input";
 import BackButton from "@/components/back-button";
+import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function SignIn() {
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    resolver: zodResolver(
+      z.object({
+        email: z
+          .string()
+          .email({ message: "Enter a valid email" })
+          .includes("srmist.edu.in", {
+            message: "Email must be an SRMIST email",
+          }),
+        password: z.string(),
+      })
+    ),
+  });
+
   return (
     <View
       style={{
@@ -11,11 +36,13 @@ export default function SignIn() {
         padding: 24,
       }}
     >
-      <View style={{
-        display: "flex",
-        justifyContent: "center",
-        marginVertical: 40,
-      }}>
+      <View
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginVertical: 40,
+        }}
+      >
         <BackButton />
         <Text
           style={{
@@ -35,13 +62,37 @@ export default function SignIn() {
           gap: 20,
         }}
       >
-        <Input
-          placeholder="Email"
-          inputMode="email"
-          keyboardType="email-address"
+        <Controller
+          control={control}
+          name="email"
+          render={({ field }) => (
+            <Input
+              value={field.value}
+              onChangeText={field.onChange}
+              placeholder="Email"
+              inputMode="email"
+              keyboardType="email-address"
+              errorMessage={errors.email?.message}
+            />
+          )}
         />
-        <Input placeholder="Password" inputMode="text" secureTextEntry />
-        <TextButton>Sign In</TextButton>
+        <Controller
+          control={control}
+          name="password"
+          render={({ field }) => (
+            <Input
+              value={field.value}
+              onChangeText={field.onChange}
+              placeholder="Password"
+              inputMode="text"
+              secureTextEntry
+              errorMessage={errors.password?.message}
+            />
+          )}
+        />
+        <TextButton onPress={handleSubmit((values) => console.log(values))}>
+          Sign In
+        </TextButton>
       </View>
     </View>
   );

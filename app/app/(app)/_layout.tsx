@@ -65,6 +65,16 @@ export default function AppLayout() {
           }}
         />
       ))}
+      <Tabs.Screen
+        name="profile"
+        options={{
+          headerShown: false,
+          tabBarStyle: {
+            display: "none",
+          },
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
