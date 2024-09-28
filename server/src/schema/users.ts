@@ -33,5 +33,5 @@ export const CreateUserSchema = createInsertSchema(users, {
     .string({ message: "Registration number is a required field " })
     .includes("RA", {
       message: "Registration number must include 'RA'",
-    }),
+    }).length(15, { message: "Registration number must be 15 characters" }),
 });

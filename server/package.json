@@ -6,6 +6,7 @@
     "db:migrate": "bun run src/utils/migrate.ts"
   },
   "dependencies": {
+    "@hono/zod-validator": "^0.3.0",
     "drizzle-orm": "^0.33.0",
     "drizzle-zod": "^0.5.1",
     "hono": "^4.6.3",
