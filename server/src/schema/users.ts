@@ -16,7 +16,7 @@ export const users = pgTable("users", {
     .$onUpdate(() => sql`now()`),
 });
 
-export const CreateUserSchema = createInsertSchema(users, {
+export const UserSchema = createInsertSchema(users, {
   name: z
     .string({ message: "Name is a required field " })
     .min(3, { message: "Name must be at least 3 characters" }),
@@ -33,5 +33,20 @@ export const CreateUserSchema = createInsertSchema(users, {
     .string({ message: "Registration number is a required field " })
     .includes("RA", {
       message: "Registration number must include 'RA'",
-    }).length(15, { message: "Registration number must be 15 characters" }),
+    })
+    .length(15, { message: "Registration number must be 15 characters" }),
+});
+
+export const SignInUserSchema = UserSchema.pick({
+  email: true,
+  password: true,
+});
+
+export const UpdateUserSchema = UserSchema.pick({
+  name: true,
+  password: true,
+});
+
+export const DeleteUserSchema = UserSchema.pick({
+  email: true,
 });
