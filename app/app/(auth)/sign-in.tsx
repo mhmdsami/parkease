@@ -5,6 +5,11 @@ import BackButton from "@/components/back-button";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { QUERY_KEYS, STORAGE_KEYS } from "@/constants/keys";
+import { signInApi } from "@/api/user";
+import * as SecureStore from "expo-secure-store";
+import { router } from "expo-router";
 
 export default function SignIn() {
   const {
@@ -27,6 +32,15 @@ export default function SignIn() {
         password: z.string(),
       })
     ),
+  });
+
+  const { mutate: signIn, isPending: isSigningIn } = useMutation({
+    mutationKey: [QUERY_KEYS.SIGN_IN],
+    mutationFn: signInApi,
+    onSuccess: (data) => {
+      SecureStore.setItemAsync(STORAGE_KEYS.TOKEN, data.token);
+      router.push("/(app)");
+    },
   });
 
   return (
@@ -90,7 +104,10 @@ export default function SignIn() {
             />
           )}
         />
-        <TextButton onPress={handleSubmit((values) => console.log(values))}>
+        <TextButton
+          disabled={isSigningIn}
+          onPress={handleSubmit((values) => signIn(values))}
+        >
           Sign In
         </TextButton>
       </View>

@@ -1,16 +1,8 @@
 import { Tabs } from "expo-router";
-import * as SecureStore from "expo-secure-store";
-import { Redirect } from "expo-router";
 import { View } from "react-native";
 import { COLORS } from "@/constants/colors";
-import { STORAGE_KEYS } from "@/constants/keys";
 import { Home, KeyRound, History } from "lucide-react-native";
-
 export default function AppLayout() {
-  if (!SecureStore.getItem(STORAGE_KEYS.TOKEN)) {
-    return <Redirect href="/(auth)" />;
-  }
-
   const tabs = [
     {
       name: "index",
