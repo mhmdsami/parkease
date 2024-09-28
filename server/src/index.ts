@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { PORT } from "../utils/config";
+import { PORT } from "./utils/config";
 
 const app = new Hono().basePath("/api");
 
@@ -13,5 +13,5 @@ app.get("/healthcheck", (c) => {
 
 export default {
   port: PORT,
-  app,
+  fetch: app.fetch,
 };
