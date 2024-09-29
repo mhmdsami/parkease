@@ -6,7 +6,8 @@ export default function useToken() {
   const token = SecureStore.getItem(STORAGE_KEYS.TOKEN);
 
   if (!token) {
-    throw router.push("/(auth)");
+    router.push("/(auth)");
+    return "";
   }
 
   return token;
