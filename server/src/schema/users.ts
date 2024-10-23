@@ -1,4 +1,3 @@
-import { sql } from "drizzle-orm";
 import { timestamp, pgTable, text, uuid } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -13,7 +12,7 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at")
     .notNull()
     .defaultNow()
-    .$onUpdate(() => sql`now()`),
+    .$onUpdate(() => new Date()),
 });
 
 export const UserSchema = createInsertSchema(users, {
@@ -45,8 +44,4 @@ export const SignInUserSchema = UserSchema.pick({
 export const UpdateUserSchema = UserSchema.pick({
   name: true,
   password: true,
-});
-
-export const DeleteUserSchema = UserSchema.pick({
-  email: true,
-});
+}).partial();

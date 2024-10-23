@@ -6,6 +6,7 @@ const configSchema = z.object({
     .string()
     .default("postgres://postgres:postgres@localhost:5432/lockout"),
   JWT_SECRET: z.string().default("secret"),
+  ADMIN_API_KEY: z.string(),
 });
 
-export const { PORT, DATABASE_URL, JWT_SECRET } = configSchema.parse(Bun.env);
+export const { PORT, DATABASE_URL, JWT_SECRET, ADMIN_API_KEY } = configSchema.parse(Bun.env);

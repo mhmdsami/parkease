@@ -3,6 +3,7 @@ import { PORT } from "./utils/config";
 import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 import user from "./routes/user";
+import locker from "./routes/locker";
 
 const app = new Hono().basePath("/api");
 
@@ -18,6 +19,7 @@ app.get("/healthcheck", (c) => {
 });
 
 app.route("/user", user);
+app.route("/locker", locker);
 
 export default {
   port: PORT,
