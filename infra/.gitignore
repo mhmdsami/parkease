@@ -1,0 +1,6 @@
+# config
+config.py
+
+# editor config
+/.vscode
+/.idea
