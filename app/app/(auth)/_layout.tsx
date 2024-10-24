@@ -1,6 +1,13 @@
-import { Tabs } from "expo-router";
+import useToken from "@/hooks/use-token";
+import { Redirect, Tabs } from "expo-router";
 
 export default function AuthLayout() {
+  const token = useToken();
+
+  if (token) {
+    return <Redirect href="/(app)" />;
+  }
+
   return (
     <Tabs
       screenOptions={{

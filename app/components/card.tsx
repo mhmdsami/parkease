@@ -10,7 +10,13 @@ interface CardProps {
   time?: string;
 }
 
-export default function Card({ children, location, locker, date, time }: CardProps) {
+export default function Card({
+  children,
+  location,
+  locker,
+  date,
+  time,
+}: CardProps) {
   return (
     <View
       style={{
@@ -45,6 +51,17 @@ export default function Card({ children, location, locker, date, time }: CardPro
         >
           {locker}
         </Text>
+        {date && (
+          <Text
+            style={{
+              fontFamily: "MonaSans-Bold",
+              fontSize: 16,
+              color: COLORS.text,
+            }}
+          >
+            {date}
+          </Text>
+        )}
         <Text
           style={{
             fontFamily: "MonaSans-Bold",

@@ -4,5 +4,10 @@ export const STORAGE_KEYS = {
 
 export const QUERY_KEYS = {
   SIGN_IN: "sign-in",
-  ME: "me"
+  ME: "me",
+  HISTORY: "history",
+  KEY: "key",
+
+  LOCATION: "location",
+  LOCATIONS: "locations",
 } as const;

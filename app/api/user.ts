@@ -1,11 +1,5 @@
 import { API, ApiResponse } from "./config";
-
-type User = {
-  id: string;
-  email: string;
-  name: string;
-  registrationNumber: string;
-};
+import { History, Key, User } from "@/utils/types";
 
 export const signInApi = async (credentials: {
   email: string;
@@ -34,7 +28,7 @@ export const signInApi = async (credentials: {
   return data.data;
 };
 
-export const getUserInfo = async (token: string) => {
+export const getUserInfoApi = async (token: string) => {
   const res = await fetch(
     API.BASE_URL + API.ENDPOINTS.USER.BASE_URL() + API.ENDPOINTS.USER.INFO(),
     {
@@ -54,4 +48,48 @@ export const getUserInfo = async (token: string) => {
   }
 
   return data.data;
+};
+
+export const getUserHistoryApi = async (token: string) => {
+  const res = await fetch(
+    API.BASE_URL + API.ENDPOINTS.USER.BASE_URL() + API.ENDPOINTS.USER.HISTORY(),
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch history");
+  }
+
+  const data = (await res.json()) as ApiResponse<{ history: History[] }>;
+  if (!data.success) {
+    throw new Error(data.error);
+  }
+
+  return data.data.history;
+};
+
+export const getKeyApi = async (token: string) => {
+  const res = await fetch(
+    API.BASE_URL + API.ENDPOINTS.USER.BASE_URL() + API.ENDPOINTS.USER.KEY(),
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch key");
+  }
+
+  const data = (await res.json()) as ApiResponse<{ locker: Key }>;
+  if (!data.success) {
+    throw new Error(data.error);
+  }
+
+  return data.data.locker;
 };

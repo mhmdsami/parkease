@@ -4,8 +4,15 @@ export const API = {
     USER: {
       BASE_URL: () => "/user",
       SIGN_IN: () => "/sign-in",
-      INFO: () => "/me"
+      INFO: () => "/me",
+      KEY: () => "/key",
+      HISTORY: () => "/history"
     },
+    LOCATION: {
+      BASE_URL: () => "/location",
+      ALL: () => "/all",
+      LOCKERS: (id: string) => `/${id}`
+    }
   },
 };
 

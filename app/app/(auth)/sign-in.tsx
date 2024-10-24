@@ -41,6 +41,9 @@ export default function SignIn() {
       SecureStore.setItemAsync(STORAGE_KEYS.TOKEN, data.token);
       router.push("/(app)");
     },
+    onError: (error) => {
+      console.error(error);
+    }
   });
 
   return (

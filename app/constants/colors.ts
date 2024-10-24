@@ -6,4 +6,8 @@ export const COLORS = {
   text: "#fff",
   placeholder: "#8b949e",
   danger: "#DA3633",
+  locker: {
+    unavailable: "#D9D9D9",
+    available: "#58C156",
+  },
 };
