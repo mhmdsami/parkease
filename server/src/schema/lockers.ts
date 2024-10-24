@@ -50,9 +50,9 @@ export const PingLockerParamSchema = z.object({
 });
 
 export const PingLockerBodySchema = z.object({
-  state: z.enum(state.enumValues, { message: "state is a required field" }),
+  state: z.enum(state.enumValues, { message: "State is a required field" }),
 });
 
 export const AccquireLockerSchema = z.object({
-  id: z.string({ message: "Locker ID is a required field" }),
+  lockerItemId: z.string({ message: "Locker item ID is a required field" }),
 });

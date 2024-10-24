@@ -8,10 +8,12 @@ import {
   PingLockerParamSchema,
 } from "../schema/lockers";
 import { db } from "../utils/db";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 import authenticateAdmin from "../middlewares/authenticate-admin";
 import authenticateUser from "../middlewares/authenticate-user";
 import { users } from "../schema/users";
+import { history } from "../schema/history";
+import { lockerItem } from "../schema/locations";
 
 const locker = new Hono();
 
@@ -115,12 +117,37 @@ locker.post(
 );
 
 locker.post(
-  "/accquire/:id",
+  "/accquire/:lockerItemId",
   authenticateUser,
   validator("param", AccquireLockerSchema),
   async (c) => {
-    const { id } = c.req.valid("param");
+    const { lockerItemId } = c.req.valid("param");
     const { email } = c.get("jwtPayload");
+
+    const [selectedLockerItem] = await db
+      .select()
+      .from(lockerItem)
+      .where(eq(lockerItem.id, lockerItemId));
+
+    if (!selectedLockerItem) {
+      return c.json(
+        {
+          success: false,
+          error: "Locker item not found",
+        },
+        404
+      );
+    }
+
+    if (!selectedLockerItem.lockerId) {
+      return c.json(
+        {
+          success: false,
+          error: "Locker item is already connected",
+        },
+        400
+      );
+    }
 
     const [locker] = await db
       .select({
@@ -129,7 +156,7 @@ locker.post(
         state: lockers.state,
       })
       .from(lockers)
-      .where(eq(lockers.id, id));
+      .where(eq(lockers.id, selectedLockerItem.lockerId));
 
     if (!locker) {
       return c.json({ success: false, error: "Locker not found" }, 404);
@@ -162,17 +189,23 @@ locker.post(
           .set({
             state: "in_use",
           })
-          .where(eq(lockers.id, id))
+          .where(eq(lockers.id, locker.id))
           .returning({
             id: lockers.id,
             state: lockers.state,
           });
+
         await tx
           .update(users)
           .set({
-            currentLockerId: id,
+            currentLockerId: locker.id,
           })
           .where(eq(users.email, email));
+
+        await tx.insert(history).values({
+          userId: user.id,
+          lockerItemId: lockerItemId,
+        });
 
         const res = (await (
           await fetch(`http://${locker.ipAddr}/accquire`, {
@@ -340,6 +373,15 @@ locker.post("/release", authenticateUser, async (c) => {
     return c.json({ success: false, error: "Locker not found" }, 404);
   }
 
+  const [currentLockerItem] = await db
+    .select()
+    .from(lockerItem)
+    .where(eq(lockerItem.lockerId, locker.id));
+
+  if (!currentLockerItem) {
+    return c.json({ success: false, error: "Locker item not found" }, 404);
+  }
+
   try {
     await db.transaction(async (tx) => {
       await tx
@@ -354,6 +396,18 @@ locker.post("/release", authenticateUser, async (c) => {
           currentLockerId: null,
         })
         .where(eq(users.email, email));
+      await tx
+        .update(history)
+        .set({
+          endTime: new Date(),
+        })
+        .where(
+          and(
+            eq(history.userId, user.id),
+            eq(history.lockerItemId, currentLockerItem.id),
+            isNull(history.endTime)
+          )
+        );
 
       const res = (await (
         await fetch(`http://${locker.ipAddr}/release`, {

@@ -12,13 +12,13 @@ import {
   lockerItem,
 } from "../schema/locations";
 import authenticateAdmin from "../middlewares/authenticate-admin";
-import { asc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import validator from "../middlewares/validator";
 import { lockers } from "../schema/lockers";
 
 const location = new Hono();
 
-location.get("/", async (c) => {
+location.get("/all", async (c) => {
   const availableLocations = await db.select().from(locations);
 
   return c.json({
@@ -160,10 +160,7 @@ location.get("/:id", validator("param", GetLockerItemsSchema), async (c) => {
       id: lockerItem.id,
       row: lockerItem.row,
       column: lockerItem.column,
-      locker: {
-        id: lockers.id,
-        state: lockers.state,
-      },
+      lockerState: lockers.state,
     })
     .from(lockerItem)
     .where(eq(lockerItem.locationId, id))
@@ -176,6 +173,7 @@ location.get("/:id", validator("param", GetLockerItemsSchema), async (c) => {
     message: "Successfully fetched location",
     data: {
       locationId: location.id,
+      name: location.name,
       lockers: availableLockers,
     },
   });
