@@ -10,6 +10,7 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const state = pgEnum("locker_state", [
+  "offline",
   "online",
   "available",
   "in_use",
@@ -44,10 +45,14 @@ export const AddLockerSchema = LockerSchema.pick({
   state: true,
 });
 
-export const PingLockerSchemaParam = z.object({
+export const PingLockerParamSchema = z.object({
   id: z.string({ message: "Locker ID is a required field" }),
 });
 
-export const PingLockerSchemaBody = z.object({
+export const PingLockerBodySchema = z.object({
   state: z.enum(state.enumValues, { message: "state is a required field" }),
+});
+
+export const AccquireLockerSchema = z.object({
+  id: z.string({ message: "Locker ID is a required field" }),
 });

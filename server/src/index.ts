@@ -2,8 +2,7 @@ import { Hono } from "hono";
 import { PORT } from "./utils/config";
 import { logger } from "hono/logger";
 import { cors } from "hono/cors";
-import user from "./routes/user";
-import locker from "./routes/locker";
+import * as router from "./routes";
 
 const app = new Hono().basePath("/api");
 
@@ -18,8 +17,9 @@ app.get("/healthcheck", (c) => {
   return c.json({ status: "ok", uptime: process.uptime() });
 });
 
-app.route("/user", user);
-app.route("/locker", locker);
+app.route("/user", router.userRouter);
+app.route("/locker", router.lockerRouter);
+app.route("/location", router.locationRouter);
 
 export default {
   port: PORT,
