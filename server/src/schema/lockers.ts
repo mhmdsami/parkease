@@ -45,6 +45,11 @@ export const AddLockerSchema = LockerSchema.pick({
   state: true,
 });
 
+export const VerifyLockerSchema = z.object({
+  lockerId: z.string({ message: "Locker ID is a required field" }),
+  key: z.string({ message: "Key is a required field" }),
+});
+
 export const PingLockerParamSchema = z.object({
   id: z.string({ message: "Locker ID is a required field" }),
 });

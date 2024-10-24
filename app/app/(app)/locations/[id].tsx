@@ -1,15 +1,19 @@
 import { getLockersApi } from "@/api/location";
+import { accquireLockerApi } from "@/api/locker";
 import BackButton from "@/components/back-button";
 import ProfileButton from "@/components/profile-button";
 import TextButton from "@/components/text-button";
 import { COLORS } from "@/constants/colors";
 import { QUERY_KEYS } from "@/constants/keys";
+import useToken from "@/hooks/use-token";
+import { rowCode, showInfo } from "@/utils";
 import { Locker } from "@/utils/types";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { router, useLocalSearchParams } from "expo-router";
 import { CircleCheck, CircleX } from "lucide-react-native";
+import { useState } from "react";
 import {
-  FlatList,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -18,12 +22,33 @@ import {
 } from "react-native";
 
 export default function Location() {
+  const token = useToken();
   const { id } = useLocalSearchParams();
 
   const { data, isLoading, isRefetching } = useQuery({
     queryKey: [QUERY_KEYS.LOCATION, id],
     queryFn: () => (typeof id === "string" ? getLockersApi(id) : null),
-    refetchInterval: 1000 * 60,
+    refetchInterval: 1000 * 30,
+  });
+
+  const [selectedLocker, setSelectedLocker] = useState<Locker | null>(null);
+
+  const { mutate: accquireLocker, isPending } = useMutation({
+    mutationKey: [QUERY_KEYS.ACCQUIRE_LOCKER, selectedLocker?.id],
+    mutationFn: async () => {
+      if (!selectedLocker) return null;
+      return accquireLockerApi(token, selectedLocker.id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LOCATION, id] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.KEY] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HISTORY] });
+      setSelectedLocker(null);
+      router.push("/(app)/key");
+    },
+    onError: (error) => {
+      showInfo(error.message);
+    },
   });
 
   const queryClient = useQueryClient();
@@ -144,13 +169,15 @@ export default function Location() {
       </View>
       <ScrollView
         style={{
-          height: "77%",
+          height: "65%",
         }}
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
             onRefresh={() =>
-              queryClient.refetchQueries({ queryKey: [QUERY_KEYS.LOCATIONS] })
+              queryClient.refetchQueries({
+                queryKey: [QUERY_KEYS.LOCATION, id],
+              })
             }
           />
         }
@@ -182,7 +209,13 @@ export default function Location() {
                           ? COLORS.locker.available
                           : COLORS.locker.unavailable,
                       borderRadius: 12,
+                      borderWidth: 1.5,
+                      borderColor:
+                        locker === selectedLocker
+                          ? COLORS.primary
+                          : "transparent",
                     }}
+                    onPress={() => setSelectedLocker(locker)}
                   />
                 ) : (
                   <View
@@ -192,6 +225,8 @@ export default function Location() {
                       padding: 20,
                       backgroundColor: "#F2F2F2",
                       borderRadius: 12,
+                      borderWidth: 1.5,
+                      borderColor: "transparent",
                     }}
                   />
                 )
@@ -199,7 +234,46 @@ export default function Location() {
             </View>
           ))}
         </View>
+        <View
+          style={{
+            display: "flex",
+            gap: 10,
+            marginTop: 20,
+          }}
+        >
+          <Text
+            style={{
+              fontFamily: "MonaSans-Medium",
+              fontSize: 16,
+              color: COLORS.primary,
+            }}
+          >
+            Available until {format(new Date(), "h:mm a")}
+          </Text>
+          {selectedLocker && (
+            <Text
+              style={{
+                fontFamily: "MonaSans-Bold",
+                fontSize: 20,
+                color: COLORS.primary,
+              }}
+            >
+              {rowCode(selectedLocker.row)}
+              {selectedLocker.column}
+            </Text>
+          )}
+        </View>
       </ScrollView>
+      {selectedLocker && (
+        <TextButton
+          disabled={selectedLocker.lockerState !== "available" || isPending}
+          onPress={() => accquireLocker()}
+        >
+          {selectedLocker.lockerState === "available"
+            ? "Reserve Locker"
+            : "Locker Unavailable"}
+        </TextButton>
+      )}
       <TextButton onPress={() => router.push("/(app)")}>
         View Other Locations
       </TextButton>

@@ -1,12 +1,6 @@
-import {
-  KeyboardAvoidingView,
-  Pressable,
-  SafeAreaView,
-  Text,
-  View,
-} from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { COLORS } from "@/constants/colors";
-import { LogOut, User } from "lucide-react-native";
+import { LogOut } from "lucide-react-native";
 import { useForm, Controller } from "react-hook-form";
 import * as SecureStore from "expo-secure-store";
 import { QUERY_KEYS, STORAGE_KEYS } from "@/constants/keys";

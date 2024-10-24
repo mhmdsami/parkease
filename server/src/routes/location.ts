@@ -283,6 +283,21 @@ location.post(
       );
     }
 
+    const [locker] = await db
+      .select()
+      .from(lockers)
+      .where(eq(lockers.id, selectedLockerItem.lockerId));
+
+    if (locker.state === "in_use") {
+      return c.json(
+        {
+          success: false,
+          error: "Locker is in use",
+        },
+        400
+      );
+    }
+
     const [updatedLockerItem] = await db
       .update(lockerItem)
       .set({

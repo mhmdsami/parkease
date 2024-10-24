@@ -10,6 +10,7 @@ import { QUERY_KEYS, STORAGE_KEYS } from "@/constants/keys";
 import { signInApi } from "@/api/user";
 import * as SecureStore from "expo-secure-store";
 import { router } from "expo-router";
+import { showInfo } from "@/utils";
 
 export default function SignIn() {
   const {
@@ -42,8 +43,8 @@ export default function SignIn() {
       router.push("/(app)");
     },
     onError: (error) => {
-      console.error(error);
-    }
+      showInfo(error.message);
+    },
   });
 
   return (

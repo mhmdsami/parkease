@@ -6,6 +6,7 @@ import {
   lockers,
   PingLockerBodySchema,
   PingLockerParamSchema,
+  VerifyLockerSchema,
 } from "../schema/lockers";
 import { db } from "../utils/db";
 import { and, eq, isNull } from "drizzle-orm";
@@ -59,6 +60,25 @@ locker.post("/online", validator("json", AddLockerSchema), async (c) => {
       locker: createdLocker,
     },
   });
+});
+
+locker.post("/verify", validator("json", VerifyLockerSchema), async (c) => {
+  const { lockerId, key } = c.req.valid("json");
+
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.currentLockerId, lockerId));
+
+  if (!user) {
+    return c.json({ success: false, error: "Locker not found" }, 404);
+  }
+
+  if (user.registrationNumber !== key) {
+    return c.json({ success: false, error: "Invalid key" }, 400);
+  }
+
+  return c.json({ success: true, message: "Key is valid" });
 });
 
 locker.get("/all", authenticateAdmin, async (c) => {

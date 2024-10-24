@@ -10,4 +10,7 @@ export const QUERY_KEYS = {
 
   LOCATION: "location",
   LOCATIONS: "locations",
+
+  ACCQUIRE_LOCKER: "accquire",
+  RELEASE_LOCKER: "release",
 } as const;
