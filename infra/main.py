@@ -13,6 +13,7 @@ LOCK_STATE = LockState.CLOSE
 LOCKER_ID = None
 
 LED = machine.Pin("LED", machine.Pin.OUT)
+RELAY = machine.Pin(21, machine.Pin.OUT)
 TIMER = machine.Timer()
 
 
@@ -232,6 +233,19 @@ async def locker():
         await asyncio.sleep(0)
 
 
+async def lock():
+    global LOCK_STATE
+
+    while True:
+        if LOCK_STATE == LockState.OPEN:
+            RELAY.off()
+
+        if LOCK_STATE == LockState.CLOSE:
+            RELAY.on()
+
+        await asyncio.sleep(0)
+
+
 async def main():
     global IP_ADDR
     IP_ADDR = await connect()
@@ -241,6 +255,7 @@ async def main():
     server = asyncio.start_server(handle_client, IP_ADDR, 80)
     asyncio.create_task(server)
     asyncio.create_task(locker())
+    asyncio.create_task(lock())
 
 
 loop = asyncio.get_event_loop()
