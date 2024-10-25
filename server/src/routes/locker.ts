@@ -9,7 +9,7 @@ import {
   VerifyLockerSchema,
 } from "../schema/lockers";
 import { db } from "../utils/db";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, gt, isNull, lt, sql } from "drizzle-orm";
 import authenticateAdmin from "../middlewares/authenticate-admin";
 import authenticateUser from "../middlewares/authenticate-user";
 import { users } from "../schema/users";
@@ -51,6 +51,33 @@ locker.post("/online", validator("json", AddLockerSchema), async (c) => {
 
   if (!createdLocker) {
     return c.json({ success: false, error: "Failed to create locker" }, 500);
+  }
+
+  if (createdLocker.state === "offline") {
+    const [stateUpdateLocker] = await db
+      .update(lockers)
+      .set({
+        state: "available",
+      })
+      .returning({
+        id: lockers.id,
+        state: lockers.state,
+      });
+
+    if (!stateUpdateLocker) {
+      return c.json({
+        success: false,
+        error: "Failed to update locker state",
+      });
+    }
+
+    return c.json({
+      success: true,
+      message: "Successfully updated locker state",
+      data: {
+        locker: stateUpdateLocker,
+      },
+    });
   }
 
   return c.json({
@@ -447,6 +474,42 @@ locker.post("/release", authenticateUser, async (c) => {
   } catch (e) {
     return c.json({ success: false, error: "Failed to release locker" }, 500);
   }
+});
+
+locker.post("/sync", authenticateAdmin, async (c) => {
+  await db
+    .update(lockers)
+    .set({
+      isAlive: false,
+      state: "offline",
+    })
+    .where(
+      and(
+        lt(
+          sql`extract (epoch from last_ping + interval '30 minutes')`,
+          new Date().getTime()
+        ),
+        eq(lockers.isAlive, true),
+        eq(lockers.state, "available")
+      )
+    );
+
+  await db
+    .update(lockers)
+    .set({
+      isAlive: false,
+    })
+    .where(
+      and(
+        lt(
+          sql`extract (epoch from last_ping + interval '30 minutes')`,
+          new Date().getTime()
+        ),
+        eq(lockers.isAlive, true)
+      )
+    );
+
+  return c.json({ success: true, message: "Successfully synced lockers" });
 });
 
 export default locker;
