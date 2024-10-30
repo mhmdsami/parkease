@@ -17,6 +17,8 @@ export const API = {
       BASE_URL: () => "/locker",
       ACCQUIRE: (id: string) => `/accquire/${id}`,
       RELEASE: () => "/release",
+      OPEN: () => "/open",
+      CLOSE: () => "/close",
     },
   },
 };

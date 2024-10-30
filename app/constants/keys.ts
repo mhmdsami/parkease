@@ -13,4 +13,6 @@ export const QUERY_KEYS = {
 
   ACCQUIRE_LOCKER: "accquire",
   RELEASE_LOCKER: "release",
+  OPEN_LOCKER: "open",
+  CLOSE_LOCKER: "close",
 } as const;

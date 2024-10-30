@@ -10,7 +10,7 @@ import { getKeyApi } from "@/api/user";
 import useToken from "@/hooks/use-token";
 import { rowCode } from "@/utils";
 import { format } from "date-fns";
-import { releaseLockerApi } from "@/api/locker";
+import { closeLockerApi, openLockerApi, releaseLockerApi } from "@/api/locker";
 
 export default function Key() {
   const token = useToken();
@@ -26,15 +26,38 @@ export default function Key() {
 
   const queryClient = useQueryClient();
 
-  const { mutate: releaseLocker, isPending } = useMutation({
-    mutationKey: [QUERY_KEYS.RELEASE_LOCKER],
-    mutationFn: async () => releaseLockerApi(token),
+  const { mutate: openLocker, isPending: isOpenLockerPending } = useMutation({
+    mutationKey: [QUERY_KEYS.OPEN_LOCKER],
+    mutationFn: async () => openLockerApi(token),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.KEY] });
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HISTORY] });
-      router.push("/(app)");
     },
   });
+
+  const { mutate: closeLocker, isPending: isCloseLockerPending } = useMutation({
+    mutationKey: [QUERY_KEYS.CLOSE_LOCKER],
+    mutationFn: async () => closeLockerApi(token),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.KEY] });
+    },
+  });
+
+  const { mutate: releaseLocker, isPending: isReleaseLockerPending } =
+    useMutation({
+      mutationKey: [QUERY_KEYS.RELEASE_LOCKER],
+      mutationFn: async () => releaseLockerApi(token),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.KEY] });
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HISTORY] });
+        router.push("/(app)");
+      },
+    });
+
+  const isPending =
+    isOpenLockerPending ||
+    isReleaseLockerPending ||
+    isCloseLockerPending ||
+    isRefetching;
 
   if (isLoading) {
     return (
@@ -129,7 +152,14 @@ export default function Key() {
                   gap: 16,
                 }}
               >
-                <TextButton disabled={isPending}>Open</TextButton>
+                <TextButton
+                  disabled={isPending}
+                  onPress={() =>
+                    key.lockState === "open" ? closeLocker() : openLocker()
+                  }
+                >
+                  {key.lockState === "open" ? "Close" : "Open"}
+                </TextButton>
                 <TextButton disabled>Grant Access</TextButton>
               </View>
               <TextButton

@@ -19,6 +19,8 @@ export type LockerState =
   | "in_use"
   | null;
 
+export type LockState = "open" | "closed"
+
 export type Locker = {
   id: string;
   row: number;
@@ -42,8 +44,9 @@ export type History = {
 
 export type Key = {
   id: string;
-  startTime: Date;
+  lockState: LockState
   location: string;
   row: number;
   column: number;
+  startTime: Date;
 } | null;

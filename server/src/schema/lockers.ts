@@ -17,11 +17,14 @@ export const state = pgEnum("locker_state", [
   "error",
 ]);
 
+export const lockState = pgEnum("lock_state", ["open", "closed"]);
+
 export const lockers = pgTable("lockers", {
   id: uuid("id").primaryKey().defaultRandom(),
   machineId: text("machine_id").notNull().unique(),
   ipAddr: text("ip_addr").notNull(),
   state: state("state").notNull().default("available"),
+  lockState: lockState("lock_state").notNull().default("closed"),
   isAlive: boolean("is_alive").notNull().default(true),
   lastPing: timestamp("last_ping").notNull().defaultNow(),
   createdAt: timestamp("created_at").notNull().defaultNow(),

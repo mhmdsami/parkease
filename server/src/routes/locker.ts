@@ -235,6 +235,7 @@ locker.post(
           .update(lockers)
           .set({
             state: "in_use",
+            lockState: "open",
           })
           .where(eq(lockers.id, locker.id))
           .returning({
@@ -323,6 +324,11 @@ locker.post("/open", authenticateUser, async (c) => {
       return c.json({ success: false, error: res.message }, 400);
     }
 
+    await db
+      .update(lockers)
+      .set({ lockState: "open" })
+      .where(eq(lockers.id, locker.id));
+
     return c.json({
       success: true,
       message: "Successfully opened locker",
@@ -376,6 +382,11 @@ locker.post("/close", authenticateUser, async (c) => {
     if (!res.success) {
       return c.json({ success: false, error: res.message }, 400);
     }
+
+    await db
+      .update(lockers)
+      .set({ lockState: "closed" })
+      .where(eq(lockers.id, locker.id));
 
     return c.json({
       success: true,
@@ -435,6 +446,7 @@ locker.post("/release", authenticateUser, async (c) => {
         .update(lockers)
         .set({
           state: "available",
+          lockState: "closed",
         })
         .where(eq(lockers.id, locker.id));
       await tx

@@ -243,6 +243,7 @@ user.get("/key", authenticateUser, async (c) => {
     data: {
       locker: {
         ...currentLockerItem,
+        lockState: currentLocker.lockState,
         startTime: currentHistory.startTime,
       },
     },
