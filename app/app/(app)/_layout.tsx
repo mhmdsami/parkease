@@ -3,9 +3,18 @@ import { View } from "react-native";
 import { COLORS } from "@/constants/colors";
 import { Home, KeyRound, History } from "lucide-react-native";
 import useToken from "@/hooks/use-token";
+import { QUERY_KEYS } from "@/constants/keys";
+import { getUserInfoApi } from "@/api/user";
+import { useQuery } from "@tanstack/react-query";
 
 export default function AppLayout() {
   const token = useToken();
+
+  const { data, isLoading } = useQuery({
+    queryKey: [QUERY_KEYS.ME],
+    queryFn: () => getUserInfoApi(token!),
+    enabled: !!token,
+  });
 
   const tabs = [
     {
@@ -26,6 +35,10 @@ export default function AppLayout() {
 
   if (!token) {
     return <Redirect href="/(auth)" />;
+  }
+
+  if (token && !isLoading && !data?.user.isVerified) {
+    return <Redirect href="/verify" />;
   }
 
   return (

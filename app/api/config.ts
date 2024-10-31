@@ -3,10 +3,13 @@ export const API = {
   ENDPOINTS: {
     USER: {
       BASE_URL: () => "/user",
+      REGISTER: () => "/create",
       SIGN_IN: () => "/sign-in",
       INFO: () => "/me",
       KEY: () => "/key",
       HISTORY: () => "/history",
+      VERIFY: () => "/verify",
+      RESEND_OTP: () => "/resend-otp",
     },
     LOCATION: {
       BASE_URL: () => "/location",

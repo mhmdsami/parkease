@@ -1,4 +1,4 @@
-import { timestamp, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { timestamp, pgTable, text, uuid, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { lockers } from "./lockers";
@@ -11,11 +11,19 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   registrationNumber: text("registration_number").notNull().unique(),
   currentLockerId: uuid("current_locker_id"),
+  isVerified: boolean("is_verified").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()
     .defaultNow()
     .$onUpdate(() => new Date()),
+});
+
+export const otp = pgTable("otp", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: text("email").notNull(),
+  otp: text("otp").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const usersRelations = relations(users, ({ one }) => ({
@@ -44,6 +52,12 @@ export const UserSchema = createInsertSchema(users, {
       message: "Registration number must include 'RA'",
     })
     .length(15, { message: "Registration number must be 15 characters" }),
+});
+
+export const VerifyUserSchema = z.object({
+  otp: z.string({ message: "OTP is a required field " }).length(6, {
+    message: "OTP must be 6 characters",
+  }),
 });
 
 export const SignInUserSchema = UserSchema.pick({

@@ -28,6 +28,56 @@ export const signInApi = async (credentials: {
   return data.data;
 };
 
+export const verifyOtpApi = async (token: string, otp: string) => {
+  const res = await fetch(
+    API.BASE_URL + API.ENDPOINTS.USER.BASE_URL() + API.ENDPOINTS.USER.VERIFY(),
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ otp }),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to verify OTP");
+  }
+
+  const data = (await res.json()) as ApiResponse<never>;
+  if (!data.success) {
+    throw new Error(data.error);
+  }
+
+  return true;
+};
+
+export const resendOtpApi = async (token: string) => {
+  const res = await fetch(
+    API.BASE_URL +
+      API.ENDPOINTS.USER.BASE_URL() +
+      API.ENDPOINTS.USER.RESEND_OTP(),
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to resend OTP");
+  }
+
+  const data = (await res.json()) as ApiResponse<never>;
+  if (!data.success) {
+    throw new Error(data.error);
+  }
+
+  return true;
+};
+
 export const getUserInfoApi = async (token: string) => {
   const res = await fetch(
     API.BASE_URL + API.ENDPOINTS.USER.BASE_URL() + API.ENDPOINTS.USER.INFO(),

@@ -4,6 +4,8 @@ export const STORAGE_KEYS = {
 
 export const QUERY_KEYS = {
   SIGN_IN: "sign-in",
+  VERIFY_OTP: "verify-otp",
+  RESEND_OTP: "resend-otp",
   ME: "me",
   HISTORY: "history",
   KEY: "key",

@@ -7,7 +7,9 @@
     "cron": "bun run src/utils/cron.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.682.0",
     "@hono/zod-validator": "^0.3.0",
+    "@react-email/components": "^0.0.25",
     "drizzle-orm": "^0.33.0",
     "drizzle-zod": "^0.5.1",
     "hono": "^4.6.3",
@@ -18,6 +20,7 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/node-cron": "^3.0.11",
-    "drizzle-kit": "^0.24.2"
+    "drizzle-kit": "^0.24.2",
+    "react": "^18.3.1"
   }
 }

@@ -20,7 +20,7 @@ app.get("/healthcheck", (c) => {
 app.route("/user", router.userRouter);
 app.route("/locker", router.lockerRouter);
 app.route("/location", router.locationRouter);
-app.notFound((c) => c.json({ success: false, message: "Not Found" }));
+app.notFound((c) => c.json({ success: false, message: "Not Found" }, 404));
 
 export default {
   port: PORT,
