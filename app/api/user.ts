@@ -28,6 +28,37 @@ export const signInApi = async (credentials: {
   return data.data;
 };
 
+export const registerApi = async (details: {
+  name: string;
+  email: string;
+  password: string;
+  registrationNumber: string;
+}) => {
+  const res = await fetch(
+    API.BASE_URL +
+      API.ENDPOINTS.USER.BASE_URL() +
+      API.ENDPOINTS.USER.REGISTER(),
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(details),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to register");
+  }
+
+  const data = (await res.json()) as ApiResponse<{ token: string; user: User }>;
+  if (!data.success) {
+    throw new Error(data.error);
+  }
+
+  return data.data;
+};
+
 export const verifyOtpApi = async (token: string, otp: string) => {
   const res = await fetch(
     API.BASE_URL + API.ENDPOINTS.USER.BASE_URL() + API.ENDPOINTS.USER.VERIFY(),

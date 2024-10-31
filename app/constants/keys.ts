@@ -3,6 +3,7 @@ export const STORAGE_KEYS = {
 } as const;
 
 export const QUERY_KEYS = {
+  REGISTER: "register",
   SIGN_IN: "sign-in",
   VERIFY_OTP: "verify-otp",
   RESEND_OTP: "resend-otp",

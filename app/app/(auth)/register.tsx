@@ -5,6 +5,12 @@ import BackButton from "@/components/back-button";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { QUERY_KEYS, STORAGE_KEYS } from "@/constants/keys";
+import { useMutation } from "@tanstack/react-query";
+import { registerApi } from "@/api/user";
+import * as SecureStore from "expo-secure-store";
+import { router } from "expo-router";
+import { showInfo } from "@/utils";
 
 export default function SignIn() {
   const {
@@ -42,6 +48,18 @@ export default function SignIn() {
           .min(8, { message: "Password must be at least 8 characters long" }),
       })
     ),
+  });
+
+  const { mutate: register, isPending: isRegistering } = useMutation({
+    mutationKey: [QUERY_KEYS.REGISTER],
+    mutationFn: registerApi,
+    onSuccess: (data) => {
+      SecureStore.setItemAsync(STORAGE_KEYS.TOKEN, data.token);
+      router.push("/verify");
+    },
+    onError: (error) => {
+      showInfo(error.message);
+    },
   });
 
   return (
@@ -131,7 +149,10 @@ export default function SignIn() {
             />
           )}
         />
-        <TextButton onPress={handleSubmit((values) => console.log(values))}>
+        <TextButton
+          onPress={handleSubmit((values) => register(values))}
+          disabled={isRegistering}
+        >
           Sign Up
         </TextButton>
       </View>
