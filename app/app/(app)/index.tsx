@@ -59,7 +59,7 @@ export default function Index() {
             fontSize: 24,
           }}
         >
-          Lockout
+          Parkease
         </Text>
         <ProfileButton />
       </View>

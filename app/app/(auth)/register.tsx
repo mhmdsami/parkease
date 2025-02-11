@@ -84,7 +84,7 @@ export default function SignIn() {
             marginVertical: 40,
           }}
         >
-          Welcome to Lockout,{"\n"}Sign Up to Get Started
+          Welcome to Parkease,{"\n"}Sign Up to Get Started
         </Text>
       </View>
       <View

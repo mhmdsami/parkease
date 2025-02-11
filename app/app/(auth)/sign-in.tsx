@@ -69,7 +69,7 @@ export default function SignIn() {
             marginVertical: 40,
           }}
         >
-          Welcome back to Lockout,{"\n"}Sign In to your account
+          Welcome back to Parkease,{"\n"}Sign In to your account
         </Text>
       </View>
       <View

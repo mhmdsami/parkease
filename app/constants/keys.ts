@@ -1,5 +1,5 @@
 export const STORAGE_KEYS = {
-  TOKEN: "__lockout_token",
+  TOKEN: "__parkease_token",
 } as const;
 
 export const QUERY_KEYS = {

@@ -33,7 +33,7 @@ export default function EmailVerification({
                 src="https://res.cloudinary.com/dvnp5asex/image/upload/f_auto,q_auto/v1/lockout/jiroblzxfwjdv1k8qrn6"
                 width="80"
                 height="80"
-                alt="Lockout"
+                alt="Parkease"
                 className="mx-auto my-0"
               />
             </Section>
@@ -55,7 +55,7 @@ export default function EmailVerification({
             </Section>
             <Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
             <Text className="text-center text-[12px] leading-[24px] text-[#666666]">
-              Lockout &copy; 2024
+              Parkease &copy; 2024
             </Text>
           </Container>
         </Body>

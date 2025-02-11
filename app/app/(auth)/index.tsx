@@ -20,7 +20,7 @@ export default function Auth() {
           marginBottom: 20,
         }}
       >
-        Lockout
+        Parkease
       </Text>
       <View
         style={{

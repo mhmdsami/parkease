@@ -10,7 +10,7 @@ app.use(logger());
 app.use(cors());
 
 app.get("/", (c) => {
-  return c.json({ message: "Lockout API" });
+  return c.json({ message: "Parkease API" });
 });
 
 app.get("/healthcheck", (c) => {
