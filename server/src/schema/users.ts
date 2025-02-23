@@ -1,8 +1,6 @@
 import { timestamp, pgTable, text, uuid, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-import { lockers } from "./lockers";
-import { relations } from "drizzle-orm";
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -10,7 +8,6 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
   registrationNumber: text("registration_number").notNull().unique(),
-  currentLockerId: uuid("current_locker_id"),
   isVerified: boolean("is_verified").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
@@ -25,13 +22,6 @@ export const otp = pgTable("otp", {
   otp: text("otp").notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
-
-export const usersRelations = relations(users, ({ one }) => ({
-  currentLocker: one(lockers, {
-    fields: [users.currentLockerId],
-    references: [lockers.id],
-  }),
-}));
 
 export const UserSchema = createInsertSchema(users, {
   name: z

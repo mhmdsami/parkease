@@ -5,15 +5,14 @@ import TextButton from "@/components/text-button";
 import Card from "@/components/card";
 import ProfileButton from "@/components/profile-button";
 import useToken from "@/hooks/use-token";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/constants/keys";
 import { getUserHistoryApi } from "@/api/user";
-import { rowCode, showInfo } from "@/utils";
-import { accquireLockerApi } from "@/api/locker";
-import { router } from "expo-router";
+import { rowCode } from "@/utils";
 
 export default function History() {
   const token = useToken();
+  const queryClient = useQueryClient();
 
   const {
     data: history,
@@ -22,22 +21,6 @@ export default function History() {
   } = useQuery({
     queryKey: [QUERY_KEYS.HISTORY],
     queryFn: () => getUserHistoryApi(token),
-  });
-
-  const queryClient = useQueryClient();
-
-  const { mutate: accquireLocker, isPending } = useMutation({
-    mutationKey: [QUERY_KEYS.ACCQUIRE_LOCKER],
-    mutationFn: async (id: string) => accquireLockerApi(token, id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.LOCATION] });
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.KEY] });
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HISTORY] });
-      router.push("/(app)/key");
-    },
-    onError: (error) => {
-      showInfo(error.message);
-    },
   });
 
   if (isLoading) {
@@ -110,13 +93,12 @@ export default function History() {
                 location,
                 startTime,
                 endTime,
-                lockerItem,
-                lockerState,
+                space
               }) => (
                 <Card
                   key={id}
                   location={location}
-                  locker={`${rowCode(lockerItem.row)}${lockerItem.column}`}
+                  locker={`${rowCode(space.row)}${space.column}`}
                   date={format(startTime, "do MMMM yyyy")}
                   time={`${format(startTime, "hh:mm:ss")} - ${
                     endTime ? format(endTime, "hh:mm:ss") : "Now"
@@ -129,8 +111,7 @@ export default function History() {
                     textStyle={{
                       color: COLORS.primary,
                     }}
-                    disabled={lockerState !== "available" || isPending}
-                    onPress={() => accquireLocker(lockerItem.id)}
+                    disabled
                   >
                     Regain Access
                   </TextButton>

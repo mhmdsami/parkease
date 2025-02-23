@@ -46,6 +46,7 @@ export default function AppLayout() {
       style={{
         flex: 1,
         marginTop: 24,
+        backgroundColor: "#fff",
       }}
     >
       <Tabs

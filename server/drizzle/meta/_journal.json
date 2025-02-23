@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1727513038891,
-      "tag": "0000_tense_deadpool",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1729695408550,
-      "tag": "0001_striped_sunset_bain",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1729702291988,
-      "tag": "0002_organic_tomas",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1729753439202,
-      "tag": "0003_clear_vampiro",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1729906081944,
-      "tag": "0004_demonic_winter_soldier",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1730314972843,
-      "tag": "0005_supreme_the_executioner",
+      "when": 1740326491718,
+      "tag": "0000_gigantic_skullbuster",
       "breakpoints": true
     }
   ]

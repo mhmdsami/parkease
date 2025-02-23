@@ -1,1 +1,0 @@
-ALTER TABLE "users" ADD COLUMN "current_locker_id" uuid;

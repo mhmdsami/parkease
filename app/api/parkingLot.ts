@@ -1,7 +1,7 @@
 import { API, ApiResponse } from "./config";
-import { Locker, Location } from "@/utils/types";
+import { ParkingSpace, ParkingLot } from "@/utils/types";
 
-export const getAllLocationsApi = async () => {
+export const getAllParkingLots = async () => {
   const res = await fetch(
     API.BASE_URL +
       API.ENDPOINTS.LOCATION.BASE_URL() +
@@ -9,32 +9,32 @@ export const getAllLocationsApi = async () => {
   );
 
   if (!res.ok) {
-    throw new Error("Failed to fetch locations");
+    throw new Error("Failed to fetch all parking lots");
   }
 
-  const data = (await res.json()) as ApiResponse<{ locations: Location[] }>;
+  const data = (await res.json()) as ApiResponse<{ parkingLots: ParkingLot[] }>;
   if (!data.success) {
     throw new Error(data.error);
   }
 
-  return data.data.locations;
+  return data.data.parkingLots;
 };
 
 export const getLockersApi = async (id: string) => {
   const res = await fetch(
     API.BASE_URL +
       API.ENDPOINTS.LOCATION.BASE_URL() +
-      API.ENDPOINTS.LOCATION.LOCKERS(id)
+      API.ENDPOINTS.LOCATION.SPACE(id)
   );
 
   if (!res.ok) {
-    throw new Error("Failed to fetch lockers");
+    throw new Error("Failed to fetch parking spaces");
   }
 
   const data = (await res.json()) as ApiResponse<{
-    locationId: string;
+    parkingLotId: string;
     name: string;
-    lockers: Locker[];
+    spaces: ParkingSpace[];
   }>;
   if (!data.success) {
     throw new Error(data.error);

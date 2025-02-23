@@ -14,14 +14,7 @@ export const API = {
     LOCATION: {
       BASE_URL: () => "/location",
       ALL: () => "/all",
-      LOCKERS: (id: string) => `/${id}`,
-    },
-    LOCKER: {
-      BASE_URL: () => "/locker",
-      ACCQUIRE: (id: string) => `/accquire/${id}`,
-      RELEASE: () => "/release",
-      OPEN: () => "/open",
-      CLOSE: () => "/close",
+      SPACE: (id: string) => `/${id}`,
     },
   },
 };

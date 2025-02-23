@@ -11,6 +11,7 @@ export default function Auth() {
         justifyContent: "center",
         alignItems: "center",
         padding: 24,
+        backgroundColor: "#fff",
       }}
     >
       <Text

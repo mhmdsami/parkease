@@ -5,14 +5,14 @@ import Button from "@/components/ui/button";
 import ProfileButton from "@/components/profile-button";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/constants/keys";
-import { getAllLocationsApi } from "@/api/location";
+import { getAllParkingLots } from "@/api/parkingLot";
 import TextButton from "@/components/text-button";
 import { router } from "expo-router";
 
 export default function Index() {
   const { data: locations, isLoading } = useQuery({
-    queryKey: [QUERY_KEYS.LOCATIONS],
-    queryFn: getAllLocationsApi,
+    queryKey: [QUERY_KEYS.PARKING_LOTS],
+    queryFn: getAllParkingLots,
     refetchInterval: 1000 * 60 * 10,
   });
 
@@ -74,7 +74,7 @@ export default function Index() {
             gap: 20,
           }}
         >
-          {locations?.map(({ id, name, address }) => (
+          {locations?.map(({ id, name, location }) => (
             <View
               key={id}
               style={{
@@ -107,7 +107,7 @@ export default function Index() {
                     color: COLORS.text,
                   }}
                 >
-                  {address}
+                  {location}
                 </Text>
               </View>
               <TextButton
@@ -117,9 +117,8 @@ export default function Index() {
                 textStyle={{
                   color: COLORS.primary,
                 }}
-                onPress={() => router.push(`/(app)/locations/${id}`)}
               >
-                View Lockers
+                View Parking Lots
               </TextButton>
             </View>
           ))}
@@ -143,7 +142,7 @@ export default function Index() {
             fontSize: 20,
           }}
         >
-          Locate Nearest Locker
+          Locate Nearest Parking Space
         </Text>
       </Button>
     </View>

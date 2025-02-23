@@ -76,6 +76,7 @@ export default function Verify() {
         padding: 24,
         display: "flex",
         justifyContent: "center",
+        backgroundColor: "#fff",
       }}
     >
       <Text

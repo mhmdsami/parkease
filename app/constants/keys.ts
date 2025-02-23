@@ -9,13 +9,6 @@ export const QUERY_KEYS = {
   RESEND_OTP: "resend-otp",
   ME: "me",
   HISTORY: "history",
-  KEY: "key",
 
-  LOCATION: "location",
-  LOCATIONS: "locations",
-
-  ACCQUIRE_LOCKER: "accquire",
-  RELEASE_LOCKER: "release",
-  OPEN_LOCKER: "open",
-  CLOSE_LOCKER: "close",
+  PARKING_LOTS: "parking-lots",
 } as const;

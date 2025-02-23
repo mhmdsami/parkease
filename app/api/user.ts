@@ -1,5 +1,5 @@
 import { API, ApiResponse } from "./config";
-import { History, Key, User } from "@/utils/types";
+import { History, User } from "@/utils/types";
 
 export const signInApi = async (credentials: {
   email: string;
@@ -151,26 +151,4 @@ export const getUserHistoryApi = async (token: string) => {
   }
 
   return data.data.history;
-};
-
-export const getKeyApi = async (token: string) => {
-  const res = await fetch(
-    API.BASE_URL + API.ENDPOINTS.USER.BASE_URL() + API.ENDPOINTS.USER.KEY(),
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch key");
-  }
-
-  const data = (await res.json()) as ApiResponse<{ locker: Key }>;
-  if (!data.success) {
-    throw new Error(data.error);
-  }
-
-  return data.data.locker;
 };

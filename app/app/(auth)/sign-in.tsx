@@ -52,6 +52,7 @@ export default function SignIn() {
       style={{
         flex: 1,
         padding: 24,
+        backgroundColor: "#fff",
       }}
     >
       <View

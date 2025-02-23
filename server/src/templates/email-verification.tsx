@@ -55,7 +55,7 @@ export default function EmailVerification({
             </Section>
             <Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
             <Text className="text-center text-[12px] leading-[24px] text-[#666666]">
-              Parkease &copy; 2024
+              Parkease &copy; 2025
             </Text>
           </Container>
         </Body>

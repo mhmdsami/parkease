@@ -1,24 +1,30 @@
 import { pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
 import { users } from "./users";
-import { lockerItem } from "./locations";
+import { parkingSpace } from "./parkingSpace";
+import { parkingLot } from "./parkingLot";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const history = pgTable("history", {
+export const historyTable = pgTable("history", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id")
     .notNull()
     .references(() => users.id),
-  lockerItemId: uuid("locker_id")
+  parkingSpaceId: uuid("parking_space_id")
     .notNull()
-    .references(() => lockerItem.id),
+    .references(() => parkingSpace.id),
+  parkingLotId: uuid("parking_lot_id")
+    .notNull()
+    .references(() => parkingLot.id),
   startTime: timestamp("start_time").notNull().defaultNow(),
-  endTime: timestamp("end_time"),
+  endTime: timestamp("end_time").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const AddHistorySchema = createInsertSchema(history, {
+export const AddHistorySchema = createInsertSchema(historyTable, {
   userId: z.string({ message: "User ID is a required field" }),
-  lockerItemId: z.string({ message: "Locker ID is a required field" }),
+  parkingSpaceId: z.string({ message: "Parking Space ID is a required field" }),
+  parkingLotId: z.string({ message: "Parking Lot ID is a required field" }),
 });
 
 export const UpdateHistorySchema = z.object({

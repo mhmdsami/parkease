@@ -6,48 +6,32 @@ export type User = {
   isVerified: boolean;
 };
 
-export type Location = {
+export type ParkingLot = {
   id: string;
   name: string;
-  address: string;
+  location: string;
+  capacity: number;
 };
 
-export type LockerState =
-  | "error"
-  | "offline"
-  | "online"
-  | "available"
-  | "in_use"
-  | null;
-
-export type LockState = "open" | "closed"
-
-export type Locker = {
+export type ParkingSpace = {
   id: string;
+  name: string;
+  location: string;
   row: number;
   column: number;
-  lockerState: LockerState;
+  isAvailable: boolean;
 };
 
 export type History = {
   id: string;
   userId: string;
+  parkingLotId: string;
   location: string;
   startTime: Date;
   endTime: Date | null;
-  lockerItem: {
+  space: {
     id: string;
     row: number;
-    column: number;
-  };
-  lockerState: LockerState;
+    column: number
+  }
 };
-
-export type Key = {
-  id: string;
-  lockState: LockState
-  location: string;
-  row: number;
-  column: number;
-  startTime: Date;
-} | null;
