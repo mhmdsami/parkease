@@ -22,16 +22,12 @@ export default function AppLayout() {
       Icon: Home,
     },
     {
-      name: "key",
-      Icon: KeyRound,
-    },
-    {
       name: "history",
       Icon: History,
     },
   ];
 
-  const hiddenTabs = ["profile", "locations/[id]"];
+  const hiddenTabs = ["profile", "parkingLot/[id]"];
 
   if (!token) {
     return <Redirect href="/(auth)" />;

@@ -58,4 +58,6 @@ export const SignInUserSchema = UserSchema.pick({
 export const UpdateUserSchema = UserSchema.pick({
   name: true,
   password: true,
-}).partial();
+}).partial().refine(data => data.name !== undefined || data.password !== undefined, {
+  message: "At least one of 'name' or 'password' must be provided",
+});

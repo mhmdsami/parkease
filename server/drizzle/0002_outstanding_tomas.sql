@@ -1,0 +1,1 @@
+ALTER TABLE "history" ALTER COLUMN "end_time" DROP NOT NULL;

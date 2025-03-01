@@ -20,20 +20,19 @@ export const getAllParkingLots = async () => {
   return data.data.parkingLots;
 };
 
-export const getLockersApi = async (id: string) => {
+export const getParkingLotLayout = async (id: string) => {
   const res = await fetch(
     API.BASE_URL +
       API.ENDPOINTS.LOCATION.BASE_URL() +
-      API.ENDPOINTS.LOCATION.SPACE(id)
+      API.ENDPOINTS.LOCATION.PARKING_LOT_LAYOUT(id)
   );
 
   if (!res.ok) {
-    throw new Error("Failed to fetch parking spaces");
+    throw new Error("Failed to fetch parking layout");
   }
 
   const data = (await res.json()) as ApiResponse<{
-    parkingLotId: string;
-    name: string;
+    parkingLot: ParkingLot;
     spaces: ParkingSpace[];
   }>;
   if (!data.success) {

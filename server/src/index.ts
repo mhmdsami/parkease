@@ -18,7 +18,14 @@ app.get("/healthcheck", (c) => {
 });
 
 app.route("/user", router.userRouter);
+app.route("/location", router.locationRouter);
+app.route("/space", router.parkingSpaceRouter);
 app.notFound((c) => c.json({ success: false, message: "Not Found" }, 404));
+
+app.onError((err, c) => {
+  console.error(err);
+  return c.json({ success: false, error: "Internal Server Error" }, 500);
+});
 
 export default {
   port: PORT,

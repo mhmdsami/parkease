@@ -8,6 +8,20 @@
       "when": 1740326491718,
       "tag": "0000_gigantic_skullbuster",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1740457393831,
+      "tag": "0001_big_garia",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1740802903436,
+      "tag": "0002_outstanding_tomas",
+      "breakpoints": true
     }
   ]
 }

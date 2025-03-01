@@ -1,0 +1,2 @@
+ALTER TABLE "parking_lot" ALTER COLUMN "capacity" SET DEFAULT 0;--> statement-breakpoint
+ALTER TABLE "parking_space" ADD CONSTRAINT "parking_space_parking_lot_id_row_column_unique" UNIQUE("parking_lot_id","row","column");

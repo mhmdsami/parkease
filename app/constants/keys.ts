@@ -10,5 +10,9 @@ export const QUERY_KEYS = {
   ME: "me",
   HISTORY: "history",
 
+  PARKING_LOT: "parking-lot",
   PARKING_LOTS: "parking-lots",
+
+  RESERVE_SPACE: "reserve-space",
+  END_RESERVATION: "end-reservation",
 } as const;

@@ -5,10 +5,12 @@ import TextButton from "@/components/text-button";
 import Card from "@/components/card";
 import ProfileButton from "@/components/profile-button";
 import useToken from "@/hooks/use-token";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/constants/keys";
 import { getUserHistoryApi } from "@/api/user";
-import { rowCode } from "@/utils";
+import { rowCode, showInfo } from "@/utils";
+import Loader from "@/components/ui/loader";
+import { endParkingSpaceReservation } from "@/api/parkingSpace";
 
 export default function History() {
   const token = useToken();
@@ -23,25 +25,24 @@ export default function History() {
     queryFn: () => getUserHistoryApi(token),
   });
 
+  const { mutate: endReservation, isPending } = useMutation({
+    mutationKey: [QUERY_KEYS.END_RESERVATION],
+    mutationFn: async (id: string) => {
+      return endParkingSpaceReservation(token, id);
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HISTORY] });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.PARKING_LOT, data.id],
+      });
+    },
+    onError: (error) => {
+      showInfo(error.message);
+    },
+  });
+
   if (isLoading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text
-          style={{
-            fontFamily: "MonaSans-Bold",
-            fontSize: 24,
-          }}
-        >
-          Loading...
-        </Text>
-      </View>
-    );
+    return <Loader />;
   }
 
   return (
@@ -66,7 +67,7 @@ export default function History() {
             fontSize: 24,
           }}
         >
-          Locker History
+          Parking History
         </Text>
         <ProfileButton />
       </View>
@@ -86,41 +87,47 @@ export default function History() {
             gap: 10,
           }}
         >
-          {history ? (
+          {history &&
             history.map(
-              ({
-                id,
-                location,
-                startTime,
-                endTime,
-                space
-              }) => (
+              ({ id, parkingLot, parkingSpace, startTime, endTime }) => (
                 <Card
                   key={id}
-                  location={location}
-                  locker={`${rowCode(space.row)}${space.column}`}
+                  location={parkingLot.location}
+                  locker={`${rowCode(parkingSpace.row)}${parkingSpace.column}`}
                   date={format(startTime, "do MMMM yyyy")}
                   time={`${format(startTime, "hh:mm:ss")} - ${
                     endTime ? format(endTime, "hh:mm:ss") : "Now"
                   }`}
                 >
-                  <TextButton
-                    style={{
-                      backgroundColor: COLORS.text,
-                    }}
-                    textStyle={{
-                      color: COLORS.primary,
-                    }}
-                    disabled
-                  >
-                    Regain Access
-                  </TextButton>
+                  {!endTime ? (
+                    <TextButton
+                      style={{
+                        backgroundColor: COLORS.text,
+                      }}
+                      textStyle={{
+                        color: COLORS.primary,
+                      }}
+                      disabled={isPending}
+                      onPress={() => endReservation(parkingSpace.id)}
+                    >
+                      End Reservation
+                    </TextButton>
+                  ) : (
+                    <TextButton
+                      style={{
+                        backgroundColor: COLORS.text,
+                      }}
+                      textStyle={{
+                        color: COLORS.primary,
+                      }}
+                      disabled={!parkingSpace.isAvailable}
+                    >
+                      Regain Access
+                    </TextButton>
+                  )}
                 </Card>
               )
-            )
-          ) : (
-            <Text>Get started by accru</Text>
-          )}
+            )}
         </View>
       </ScrollView>
     </View>

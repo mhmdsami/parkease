@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/constants/keys";
 import { getAllParkingLots } from "@/api/parkingLot";
 import TextButton from "@/components/text-button";
+import Loader from "@/components/ui/loader";
 import { router } from "expo-router";
 
 export default function Index() {
@@ -17,24 +18,7 @@ export default function Index() {
   });
 
   if (isLoading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text
-          style={{
-            fontFamily: "MonaSans-Bold",
-            fontSize: 24,
-          }}
-        >
-          Loading...
-        </Text>
-      </View>
-    );
+    return <Loader />;
   }
 
   return (
@@ -65,7 +49,7 @@ export default function Index() {
       </View>
       <ScrollView
         style={{
-          height: "85%",
+          height: "80%",
         }}
       >
         <View
@@ -112,13 +96,15 @@ export default function Index() {
               </View>
               <TextButton
                 style={{
+                  marginBottom: 10,
                   backgroundColor: COLORS.text,
                 }}
                 textStyle={{
                   color: COLORS.primary,
                 }}
+                onPress={() => router.push(`/(app)/parkingLot/${id}`)}
               >
-                View Parking Lots
+                View Parking
               </TextButton>
             </View>
           ))}
@@ -132,7 +118,9 @@ export default function Index() {
           alignItems: "center",
           gap: 10,
         }}
-        disabled
+        onPress={() =>
+          router.push(`/(app)/parkingLot/87f9263b-7b48-4e5f-8637-d700d40b87a4`)
+        }
       >
         <MapPin color={COLORS.text} />
         <Text
@@ -142,7 +130,7 @@ export default function Index() {
             fontSize: 20,
           }}
         >
-          Locate Nearest Parking Space
+          Locate Nearest Parking
         </Text>
       </Button>
     </View>

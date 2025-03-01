@@ -13,6 +13,7 @@ import BackButton from "@/components/back-button";
 import { useQuery } from "@tanstack/react-query";
 import { getUserInfoApi } from "@/api/user";
 import useToken from "@/hooks/use-token";
+import Loader from "@/components/ui/loader";
 
 export default function Profile() {
   const token = useToken();
@@ -69,24 +70,7 @@ export default function Profile() {
   };
 
   if (isLoading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text
-          style={{
-            fontFamily: "MonaSans-Bold",
-            fontSize: 24,
-          }}
-        >
-          Loading...
-        </Text>
-      </View>
-    );
+    return <Loader />;
   }
 
   return (

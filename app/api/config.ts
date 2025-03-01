@@ -14,8 +14,14 @@ export const API = {
     LOCATION: {
       BASE_URL: () => "/location",
       ALL: () => "/all",
-      SPACE: (id: string) => `/${id}`,
+      PARKING_LOT: (id: string) => `/${id}`,
+      PARKING_LOT_LAYOUT: (id: string) => `/${id}/spaces`,
     },
+    PARKING_SPACE: {
+      BASE_URL: () => "/space",
+      RESERVE: (id: string) => `/${id}/reserve`,
+      END: (id: string) => `/${id}/end`,
+    }
   },
 };
 

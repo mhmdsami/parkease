@@ -15,8 +15,6 @@ export type ParkingLot = {
 
 export type ParkingSpace = {
   id: string;
-  name: string;
-  location: string;
   row: number;
   column: number;
   isAvailable: boolean;
@@ -24,14 +22,17 @@ export type ParkingSpace = {
 
 export type History = {
   id: string;
-  userId: string;
-  parkingLotId: string;
-  location: string;
-  startTime: Date;
-  endTime: Date | null;
-  space: {
+  parkingLot: {
+    id: string;
+    name: string;
+    location: string;
+  };
+  parkingSpace: {
     id: string;
     row: number;
-    column: number
-  }
+    column: number;
+    isAvailable: boolean;
+  };
+  startTime: string;
+  endTime: string;
 };

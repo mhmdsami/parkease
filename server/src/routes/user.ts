@@ -8,18 +8,35 @@ import {
   otp,
   VerifyUserSchema,
 } from "../schema/users";
+import { history } from "../schema/history";
 import { db } from "../utils/db";
 import { sign } from "hono/jwt";
 import { JWT_SECRET, VERIFY_EMAIL } from "../utils/config";
-import { desc, eq, and } from "drizzle-orm";
+import { desc, eq, and, or } from "drizzle-orm";
 import validator from "../middlewares/validator";
 import { sendEmail } from "../utils/mailer";
 import EmailVerification from "../templates/email-verification";
+import { parkingSpace } from "../schema/parkingSpace";
+import { parkingLot } from "../schema/parkingLot";
 
 const user = new Hono();
 
 user.post("/create", validator("json", UserSchema), async (c) => {
   const user = c.req.valid("json");
+
+  const doesUserExist = await db
+    .select()
+    .from(users)
+    .where(
+      or(
+        eq(users.email, user.email),
+        eq(users.registrationNumber, user.registrationNumber)
+      )
+    );
+
+  if (doesUserExist.length > 0) {
+    return c.json({ success: false, error: "User already exists" }, 409);
+  }
 
   const [createdUser] = await db
     .insert(users)
@@ -79,14 +96,17 @@ user.post("/create", validator("json", UserSchema), async (c) => {
     JWT_SECRET
   );
 
-  return c.json({
-    success: true,
-    message: "Successfully created user",
-    data: {
-      user: createdUser,
-      token,
+  return c.json(
+    {
+      success: true,
+      message: "Successfully created user",
+      data: {
+        user: createdUser,
+        token,
+      },
     },
-  });
+    201
+  );
 });
 
 user.post(
@@ -276,5 +296,38 @@ user.patch(
     });
   }
 );
+
+user.get("/history", authenticateUser, async (c) => {
+  const { email } = c.get("jwtPayload");
+
+  const [user] = await db.select().from(users).where(eq(users.email, email));
+  if (!user) {
+    return c.json({ success: false, error: "User not found" }, 404);
+  }
+
+  const userHistory = await db
+    .select({
+      id: history.id,
+      parkingLot: {
+        id: parkingLot.id,
+        name: parkingLot.name,
+        location: parkingLot.location,
+      },
+      parkingSpace: {
+        id: parkingSpace.id,
+        row: parkingSpace.row,
+        column: parkingSpace.column,
+        isAvailable: parkingSpace.isAvailable,
+      },
+      startTime: history.startTime,
+      endTime: history.endTime,
+    })
+    .from(history)
+    .where(eq(history.userId, user.id))
+    .leftJoin(parkingSpace, eq(history.parkingSpaceId, parkingSpace.id))
+    .leftJoin(parkingLot, eq(parkingSpace.parkingLotId, parkingLot.id));
+
+  return c.json({ success: true, data: { history: userHistory } });
+});
 
 export default user;
