@@ -131,6 +131,28 @@ export const getUserInfoApi = async (token: string) => {
   return data.data;
 };
 
+export const getCurrentReservationApi = async(token: string) => {
+  const res = await fetch(
+    API.BASE_URL + API.ENDPOINTS.USER.BASE_URL() + API.ENDPOINTS.USER.CURRENT_RESERVATION(),
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch history");
+  }
+
+  const data = (await res.json()) as ApiResponse<{ current: History }>;
+  if (!data.success) {
+    throw new Error(data.error);
+  }
+
+  return data.data.current;
+}
+
 export const getUserHistoryApi = async (token: string) => {
   const res = await fetch(
     API.BASE_URL + API.ENDPOINTS.USER.BASE_URL() + API.ENDPOINTS.USER.HISTORY(),

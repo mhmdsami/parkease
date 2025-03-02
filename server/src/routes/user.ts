@@ -12,7 +12,7 @@ import { history } from "../schema/history";
 import { db } from "../utils/db";
 import { sign } from "hono/jwt";
 import { JWT_SECRET, VERIFY_EMAIL } from "../utils/config";
-import { desc, eq, and, or } from "drizzle-orm";
+import { desc, eq, and, or, isNull } from "drizzle-orm";
 import validator from "../middlewares/validator";
 import { sendEmail } from "../utils/mailer";
 import EmailVerification from "../templates/email-verification";
@@ -297,6 +297,39 @@ user.patch(
   }
 );
 
+user.get("/current", authenticateUser, async (c) => {
+  const { email } = c.get("jwtPayload");
+
+  const [user] = await db.select().from(users).where(eq(users.email, email));
+  if (!user) {
+    return c.json({ success: false, error: "User not found" }, 404);
+  }
+
+  const [historyEntry] = await db
+    .select({
+      id: history.id,
+      parkingLot: {
+        id: parkingLot.id,
+        name: parkingLot.name,
+        address: parkingLot.address,
+      },
+      parkingSpace: {
+        id: parkingSpace.id,
+        row: parkingSpace.row,
+        column: parkingSpace.column,
+        isAvailable: parkingSpace.isAvailable,
+      },
+      startTime: history.startTime,
+      endTime: history.endTime,
+    })
+    .from(history)
+    .where(and(eq(history.userId, user.id), isNull(history.endTime)))
+    .leftJoin(parkingSpace, eq(history.parkingSpaceId, parkingSpace.id))
+    .leftJoin(parkingLot, eq(parkingSpace.parkingLotId, parkingLot.id));
+
+  return c.json({ success: true, data: { current: historyEntry } });
+});
+
 user.get("/history", authenticateUser, async (c) => {
   const { email } = c.get("jwtPayload");
 
@@ -311,7 +344,7 @@ user.get("/history", authenticateUser, async (c) => {
       parkingLot: {
         id: parkingLot.id,
         name: parkingLot.name,
-        location: parkingLot.location,
+        address: parkingLot.address,
       },
       parkingSpace: {
         id: parkingSpace.id,
@@ -325,7 +358,8 @@ user.get("/history", authenticateUser, async (c) => {
     .from(history)
     .where(eq(history.userId, user.id))
     .leftJoin(parkingSpace, eq(history.parkingSpaceId, parkingSpace.id))
-    .leftJoin(parkingLot, eq(parkingSpace.parkingLotId, parkingLot.id));
+    .leftJoin(parkingLot, eq(parkingSpace.parkingLotId, parkingLot.id))
+    .orderBy(desc(history.startTime));
 
   return c.json({ success: true, data: { history: userHistory } });
 });

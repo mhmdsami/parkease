@@ -22,6 +22,20 @@
       "when": 1740802903436,
       "tag": "0002_outstanding_tomas",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1740905482300,
+      "tag": "0003_boring_the_fallen",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1740905575789,
+      "tag": "0004_same_slipstream",
+      "breakpoints": true
     }
   ]
 }

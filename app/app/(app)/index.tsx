@@ -9,17 +9,44 @@ import { getAllParkingLots } from "@/api/parkingLot";
 import TextButton from "@/components/text-button";
 import Loader from "@/components/ui/loader";
 import { router } from "expo-router";
+import { locateNearestParkingLot } from "@/utils/haversine-distance";
+import * as Location from "expo-location";
+import { showInfo } from "@/utils";
+import { useEffect, useState } from "react";
 
 export default function Index() {
+  const [location, setLocation] = useState<Location.LocationObject>();
   const { data: locations, isLoading } = useQuery({
     queryKey: [QUERY_KEYS.PARKING_LOTS],
     queryFn: getAllParkingLots,
     refetchInterval: 1000 * 60 * 10,
   });
 
+  useEffect(() => {
+    async function getCurrentLocation() {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        showInfo("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    }
+
+    getCurrentLocation();
+  }, []);
+
   if (isLoading) {
     return <Loader />;
   }
+
+  const nearestParkingLot =
+    locations &&
+    locateNearestParkingLot(
+      { x: location?.coords.longitude ?? 0, y: location?.coords.latitude ?? 0 },
+      locations
+    );
 
   return (
     <View
@@ -58,7 +85,7 @@ export default function Index() {
             gap: 20,
           }}
         >
-          {locations?.map(({ id, name, location }) => (
+          {locations?.map(({ id, name, address }) => (
             <View
               key={id}
               style={{
@@ -91,7 +118,7 @@ export default function Index() {
                     color: COLORS.text,
                   }}
                 >
-                  {location}
+                  {address}
                 </Text>
               </View>
               <TextButton
@@ -110,29 +137,31 @@ export default function Index() {
           ))}
         </View>
       </ScrollView>
-      <Button
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 10,
-        }}
-        onPress={() =>
-          router.push(`/(app)/parkingLot/87f9263b-7b48-4e5f-8637-d700d40b87a4`)
-        }
-      >
-        <MapPin color={COLORS.text} />
-        <Text
+      {nearestParkingLot && (
+        <Button
           style={{
-            color: COLORS.text,
-            fontFamily: "MonaSans-Bold",
-            fontSize: 20,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 10,
           }}
+          onPress={() =>
+            router.push(`/(app)/parkingLot/${nearestParkingLot.id}`)
+          }
         >
-          Locate Nearest Parking
-        </Text>
-      </Button>
+          <MapPin color={COLORS.text} />
+          <Text
+            style={{
+              color: COLORS.text,
+              fontFamily: "MonaSans-Bold",
+              fontSize: 20,
+            }}
+          >
+            Locate Nearest Parking
+          </Text>
+        </Button>
+      )}
     </View>
   );
 }

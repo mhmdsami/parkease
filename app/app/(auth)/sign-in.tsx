@@ -40,7 +40,7 @@ export default function SignIn() {
     mutationFn: signInApi,
     onSuccess: (data) => {
       SecureStore.setItemAsync(STORAGE_KEYS.TOKEN, data.token);
-      router.push("/(app)");
+      router.push("/(app)/");
     },
     onError: (error) => {
       showInfo(error.message);

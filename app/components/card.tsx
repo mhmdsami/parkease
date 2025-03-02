@@ -4,16 +4,16 @@ import TextButton from "./text-button";
 
 interface CardProps {
   children?: React.ReactNode;
-  location: string;
-  locker: string;
+  address: string;
+  space: string;
   date?: string;
   time?: string;
 }
 
 export default function Card({
   children,
-  location,
-  locker,
+  address,
+  space,
   date,
   time,
 }: CardProps) {
@@ -34,7 +34,7 @@ export default function Card({
           color: COLORS.text,
         }}
       >
-        {location}
+        {address}
       </Text>
       <View
         style={{
@@ -49,7 +49,7 @@ export default function Card({
             color: COLORS.text,
           }}
         >
-          {locker}
+          {space}
         </Text>
         {date && (
           <Text

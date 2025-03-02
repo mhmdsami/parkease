@@ -1,0 +1,1 @@
+ALTER TABLE "parking_lot" RENAME COLUMN "location" TO "address";

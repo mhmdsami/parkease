@@ -1,7 +1,7 @@
 import { Redirect, Tabs } from "expo-router";
 import { View } from "react-native";
 import { COLORS } from "@/constants/colors";
-import { Home, KeyRound, History } from "lucide-react-native";
+import { Home, KeyRound, History, CarFront } from "lucide-react-native";
 import useToken from "@/hooks/use-token";
 import { QUERY_KEYS } from "@/constants/keys";
 import { getUserInfoApi } from "@/api/user";
@@ -20,6 +20,10 @@ export default function AppLayout() {
     {
       name: "index",
       Icon: Home,
+    },
+    {
+      name: "reservation",
+      Icon: CarFront
     },
     {
       name: "history",
