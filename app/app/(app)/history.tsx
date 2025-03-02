@@ -7,10 +7,14 @@ import ProfileButton from "@/components/profile-button";
 import useToken from "@/hooks/use-token";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/constants/keys";
-import { getUserHistoryApi } from "@/api/user";
+import { getCurrentReservationApi, getUserHistoryApi } from "@/api/user";
 import { rowCode, showInfo } from "@/utils";
 import Loader from "@/components/ui/loader";
-import { endParkingSpaceReservation } from "@/api/parkingSpace";
+import {
+  endParkingSpaceReservation,
+  reserveParkingSpace,
+} from "@/api/parkingSpace";
+import { router } from "expo-router";
 
 export default function History() {
   const token = useToken();
@@ -25,21 +29,49 @@ export default function History() {
     queryFn: () => getUserHistoryApi(token),
   });
 
-  const { mutate: endReservation, isPending } = useMutation({
-    mutationKey: [QUERY_KEYS.END_RESERVATION],
+  const hasActiveReservation = history?.some(({ endTime }) => !endTime);
+
+  const { mutate: reserveSpace, isPending: isReservingSpace } = useMutation({
+    mutationKey: [QUERY_KEYS.RESERVE_SPACE],
     mutationFn: async (id: string) => {
-      return endParkingSpaceReservation(token, id);
+      return reserveParkingSpace(token, id);
     },
     onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.PARKING_LOT, data.parkingLotId],
+      });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HISTORY] });
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.PARKING_LOT, data.id],
+        queryKey: [QUERY_KEYS.CURRENT_RESERVATION],
       });
+      router.push("/(app)/reservation");
     },
     onError: (error) => {
       showInfo(error.message);
     },
   });
+
+  const { mutate: endReservation, isPending: isEndingReservation } =
+    useMutation({
+      mutationKey: [QUERY_KEYS.END_RESERVATION],
+      mutationFn: async (id: string) => {
+        return endParkingSpaceReservation(token, id);
+      },
+      onSuccess: (data) => {
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HISTORY] });
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.CURRENT_RESERVATION],
+        });
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS.PARKING_LOT, data.id],
+        });
+      },
+      onError: (error) => {
+        showInfo(error.message);
+      },
+    });
+
+  const isPending = isReservingSpace || isEndingReservation;
 
   if (isLoading) {
     return <Loader />;
@@ -92,11 +124,11 @@ export default function History() {
               ({ id, parkingLot, parkingSpace, startTime, endTime }) => (
                 <Card
                   key={id}
-                  location={parkingLot.location}
-                  locker={`${rowCode(parkingSpace.row)}${parkingSpace.column}`}
+                  address={parkingLot.address}
+                  space={`${rowCode(parkingSpace.row)}${parkingSpace.column}`}
                   date={format(startTime, "do MMMM yyyy")}
-                  time={`${format(startTime, "hh:mm:ss")} - ${
-                    endTime ? format(endTime, "hh:mm:ss") : "Now"
+                  time={`${format(startTime, "hh:mm aaa")} - ${
+                    endTime ? format(endTime, "hh:mm aaa") : "Now"
                   }`}
                 >
                   {!endTime ? (
@@ -120,7 +152,12 @@ export default function History() {
                       textStyle={{
                         color: COLORS.primary,
                       }}
-                      disabled={!parkingSpace.isAvailable}
+                      disabled={
+                        !parkingSpace.isAvailable ||
+                        isPending ||
+                        hasActiveReservation
+                      }
+                      onPress={() => reserveSpace(parkingSpace.id)}
                     >
                       Regain Access
                     </TextButton>

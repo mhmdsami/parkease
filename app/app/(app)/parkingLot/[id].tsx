@@ -1,5 +1,6 @@
 import { getParkingLotLayout } from "@/api/parkingLot";
 import { reserveParkingSpace } from "@/api/parkingSpace";
+import { getCurrentReservationApi } from "@/api/user";
 import BackButton from "@/components/back-button";
 import ProfileButton from "@/components/profile-button";
 import TextButton from "@/components/text-button";
@@ -25,16 +26,31 @@ export default function Location() {
   const token = useToken();
   const { id } = useLocalSearchParams();
 
-  const { data, isLoading, isRefetching } = useQuery({
+  const {
+    data,
+    isLoading: isParkingLotLayoutLoading,
+    isRefetching,
+  } = useQuery({
     queryKey: [QUERY_KEYS.PARKING_LOT, id],
     queryFn: () => (typeof id === "string" ? getParkingLotLayout(id) : null),
     refetchInterval: 1000 * 30,
   });
 
+  const { data: currentReservation, isLoading: isCurrentReservationLoading } =
+    useQuery({
+      queryKey: [QUERY_KEYS.CURRENT_RESERVATION],
+      queryFn: async () => {
+        const currentReservation = await getCurrentReservationApi(token);
+        return currentReservation ? currentReservation : null;
+      },
+    });
+
+  const isLoading = isParkingLotLayoutLoading || isCurrentReservationLoading;
+
   const [selectedSpace, setSelectedSpace] = useState<ParkingSpace | null>(null);
 
   const { mutate: reserveSpace, isPending } = useMutation({
-    mutationKey: [QUERY_KEYS.RESERVE_SPACE, selectedSpace?.id],
+    mutationKey: [QUERY_KEYS.RESERVE_SPACE],
     mutationFn: async () => {
       if (!selectedSpace) return null;
       return reserveParkingSpace(token, selectedSpace.id);
@@ -42,8 +58,11 @@ export default function Location() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.PARKING_LOT, id] });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.HISTORY] });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.CURRENT_RESERVATION],
+      });
       setSelectedSpace(null);
-      router.push("/(app)");
+      router.push("/(app)/reservation");
     },
     onError: (error) => {
       showInfo(error.message);
@@ -152,7 +171,7 @@ export default function Location() {
       </View>
       <ScrollView
         style={{
-          height: "65%",
+          height: "60%",
         }}
         refreshControl={
           <RefreshControl
@@ -241,9 +260,17 @@ export default function Location() {
           )}
         </View>
       </ScrollView>
+      {currentReservation && (
+        <Text>
+          You have an active reservation. Please end it before reserving a new
+          space.
+        </Text>
+      )}
       {selectedSpace && (
         <TextButton
-          disabled={!selectedSpace.isAvailable || isPending}
+          disabled={
+            !selectedSpace.isAvailable || isPending || !!currentReservation
+          }
           onPress={() => reserveSpace()}
         >
           {selectedSpace.isAvailable ? "Reserve Space" : "Locker Unavailable"}

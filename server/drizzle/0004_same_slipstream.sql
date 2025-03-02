@@ -1,0 +1,1 @@
+ALTER TABLE "parking_lot" ADD COLUMN "location" "point" DEFAULT point(0, 0) NOT NULL;

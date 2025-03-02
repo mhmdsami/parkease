@@ -13,6 +13,7 @@ export const QUERY_KEYS = {
   PARKING_LOT: "parking-lot",
   PARKING_LOTS: "parking-lots",
 
+  CURRENT_RESERVATION: "current-reservation",
   RESERVE_SPACE: "reserve-space",
   END_RESERVATION: "end-reservation",
 } as const;

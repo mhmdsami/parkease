@@ -15,13 +15,29 @@ import {
   GetParkingSpacesParamSchema,
   parkingSpace,
 } from "../schema/parkingSpace";
-import { eq, sql } from "drizzle-orm";
-import authenticateUser from "../middlewares/authenticate-user";
+import { eq, and, sql } from "drizzle-orm";
 
 const router = new Hono();
 
 router.get("/all", async (c) => {
-  const parkingLots = await db.select().from(parkingLot);
+  const parkingLots = await db
+    .select({
+      id: parkingLot.id,
+      name: parkingLot.name,
+      address: parkingLot.address,
+      location: parkingLot.location,
+      capacity: parkingLot.capacity,
+      availableSpaces: sql`COUNT(${parkingSpace.id})`,
+    })
+    .from(parkingLot)
+    .leftJoin(
+      parkingSpace,
+      and(
+        eq(parkingSpace.parkingLotId, parkingLot.id),
+        eq(parkingSpace.isAvailable, true)
+      )
+    )
+    .groupBy(parkingLot.id);
 
   return c.json({
     success: true,
@@ -76,11 +92,11 @@ router.post(
   authenticateAdmin,
   validator("json", AddParkingLotSchema),
   async (c) => {
-    const { name, location } = c.req.valid("json");
+    const { name, address, location } = c.req.valid("json");
 
     const [newParkingLot] = await db
       .insert(parkingLot)
-      .values({ name, location })
+      .values({ name, address, location })
       .returning();
 
     return c.json({
@@ -146,7 +162,7 @@ router.put(
   validator("json", UpdateParkingLotBodySchema),
   async (c) => {
     const { parkingLotId } = c.req.valid("param");
-    const { name, location } = c.req.valid("json");
+    const { name, address } = c.req.valid("json");
 
     const [requestedParkingLot] = await db
       .select()
@@ -161,7 +177,7 @@ router.put(
 
     const [updatedParkingLot] = await db
       .update(parkingLot)
-      .set({ name, location })
+      .set({ name, address })
       .where(eq(parkingLot.id, parkingLotId))
       .returning();
 
